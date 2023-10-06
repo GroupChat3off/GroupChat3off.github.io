@@ -1,0 +1,29 @@
+body {
+    background-color: #808080; /* Gray background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Fredoka One', sans-serif; /* Fredoka One font */
+}
+
+.box {
+    width: 500px; /* Enlarged width */
+    height: 350px; /* Enlarged height */
+    background-color: #808080; /* Gray box color */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.5); /* Shadow */
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: white; /* Text color set to white */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow */
+}
+
+.rounded-video {
+    border-radius: 15px; /* Rounded corners for the video */
+}
