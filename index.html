@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://xxsibxx.github.io/ruffleembedsetup112/ruffle/ruffle.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&display=swap">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Hide the scrollbar */
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #dropArea {
+            width: 400px;
+            height: 300px;
+            border: 2px dashed #888;
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            margin: 20px auto;
+            font-family: 'Bungee', cursive;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Added shadow to the drop area */
+        }
+
+        #dropArea:hover {
+            background-color: rgba(68, 68, 68, 0.2); /* Less dark and more transparent hover background */
+            color: #fff; /* White text color on hover */
+            border-color: #000; /* Darker border color on hover */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7); /* Increased shadow on hover */
+        }
+
+        #dropArea p, #toSelect {
+            margin: 0;
+            font-size: 24px; /* Increased font size */
+            font-weight: bold;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Added more shadow to the text */
+            letter-spacing: 2px;
+        }
+
+        #dropArea p {
+            color: #fff; /* White text color */
+            margin-top: -25px; /* Raised text */
+            height: 50px; /* Set the height in pixels */
+            -webkit-text-stroke: 2px #000; /* Webkit browsers (Safari, Chrome) */
+        }
+
+        #toSelect {
+            color: #fff; /* White text color */
+            margin-top: -15px; /* Adjusted vertical alignment */
+            -webkit-text-stroke: 2px #000; /* Webkit browsers (Safari, Chrome) */
+        }
+
+        #dropArea input {
+            display: none;
+        }
+
+        .swf-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div id="dropArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+    <p>Drop files here or click</p>
+    <div id="toSelect">TO SELECT</div>
+    <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect()">
+</div>
+
+<div class="swf-container">
+    <!-- SWF content will be dynamically added here -->
+</div>
+
+<script>
+    function handleDragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        handleFiles(files);
+    }
+
+    function handleFileSelect() {
+        const files = document.getElementById('fileInput').files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const file = files[0]; // Assuming only one file is selected or dropped
+            if (file.type === 'application/x-shockwave-flash') {
+                // Replace existing SWF with the new one
+                const swfContainer = document.querySelector('.swf-container');
+                swfContainer.innerHTML = ''; // Clear existing content
+                const swfObject = document.createElement('object');
+                swfObject.type = 'application/x-shockwave-flash';
+                swfObject.data = URL.createObjectURL(file);
+                swfObject.width = '100%';
+                swfObject.height = '100%';
+                swfContainer.appendChild(swfObject);
+
+                // Hide the drop area once SWF is selected
+                document.getElementById('dropArea').style.display = 'none';
+                // Show the SWF container
+                swfContainer.style.display = 'block';
+            } else {
+                alert('Invalid file type. Please select an SWF file.');
+            }
+        }
+    }
+
+    // Enable file input on click for file selection
+    document.getElementById('dropArea').addEventListener('click', function() {
+        document.getElementById('fileInput').click();
+    });
+
+    // Event listener for Ctrl + X key press
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.key === 'x') {
+            // Reload the entire page when Ctrl + X is pressed
+            location.reload();
+        }
+    });
+</script>
+
+</body>
+</html>
