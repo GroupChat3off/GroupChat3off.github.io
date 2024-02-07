@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&display=swap">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="dropArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+        <div id="ToDropOrClick">Drop files here or click</div>
+        <div id="toSelect">TO SELECT</div>
+        <input type="file" id="fileInput" style="display: none;">
+    </div>
+
+    <script>
+        let gameContainer = null;
+        let selectionBox = document.getElementById('dropArea');
+        let gameStarted = false;
+
+        async function handleFileSelect(file) {
+            selectionBox.style.display = 'none'; // Hide the selection box
+
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const fileNameParts = file.name.split(".");
+                const fileExtension = fileNameParts.pop();
+
+                const core = await getCoreFromExtension(fileExtension);
+
+                if (core) {
+                    if (gameStarted) {
+                        gameContainer.remove();
+                        gameContainer = null;
+                    }
+                    gameStarted = true;
+
+                    gameContainer = createGameContainer();
+                    loadGame(url, fileNameParts.shift(), core, gameContainer);
+                } else {
+                    alert("Invalid file type. Please select an ROM file.");
+                    resetSite();
+                }
+            } else {
+                alert("No file selected.");
+            }
+        }
+
+        async function getCoreFromExtension(extension) {
+            const supportedFormats = {
+                "nes": ["fds", "nes", "unif", "unf"],
+                "snes": ["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"],
+                "n64": ["z64", "n64"],
+                // Add more supported formats here
+            };
+
+            for (const core in supportedFormats) {
+                if (supportedFormats[core].includes(extension)) {
+                    return core;
+                }
+            }
+
+            return null;
+        }
+
+        function createGameContainer() {
+            const gameContainer = document.createElement("div");
+            gameContainer.id = "display";
+            document.body.appendChild(gameContainer);
+            return gameContainer;
+        }
+
+        async function loadGame(url, gameName, core, container) {
+            window.EJS_player = "#display";
+            window.EJS_gameName = gameName;
+            window.EJS_biosUrl = "";
+            window.EJS_gameUrl = url;
+            window.EJS_core = core;
+            window.EJS_pathtodata = "data/";
+            window.EJS_startOnLoaded = true;
+            window.EJS_DEBUG_XX = false;
+            window.EJS_disableDatabases = true;
+
+            const loaderScript = document.createElement("script");
+            loaderScript.src = "data/loader.js";
+            document.body.appendChild(loaderScript);
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            handleFileSelect(file);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.key === 'x' && gameStarted) {
+                resetSite();
+            }
+        });
+
+        function resetSite() {
+            if (gameContainer) {
+                gameContainer.remove();
+                gameContainer = null;
+            }
+            selectionBox.style.display = 'block'; // Show the selection box
+            gameStarted = false;
+        }
+
+        const dropArea = document.getElementById('dropArea');
+        dropArea.addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.click();
+        });
+
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            handleFileSelect(file);
+        });
+    </script>
+</body>
+</html>
